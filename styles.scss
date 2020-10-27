@@ -1,0 +1,137 @@
+$bgc: #242582;
+$color: #fff;
+$btnBgc: #f64c72;
+$linkHoverColor: #99738e;
+$hfBgc: #2f2fa2;
+
+@mixin dpFlex($jc: false, $ai: false, $fd: false) {
+	display: flex;
+	@if $fd {
+		flex-direction: $fd;
+	}
+	@if $jc {
+		justify-content: $jc;
+	}
+	@if $ai {
+		align-items: $ai;
+	}
+}
+
+%TextInput {
+	font-size: 1rem;
+	padding: 0.3rem;
+	background-color: #fff;
+	border: none;
+	border-radius: 0.3rem;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+	box-sizing: border-box;
+}
+
+ul {
+	list-style: none;
+}
+
+a {
+	text-decoration: none;
+	color: #333;
+	outline: none;
+}
+
+button {
+	@extend %TextInput;
+	cursor: pointer;
+}
+
+button:focus {
+	outline: none;
+}
+
+input[type='text'] {
+	@extend %TextInput;
+}
+
+textarea {
+	@extend %TextInput;
+	resize: none;
+}
+
+header {
+	min-height: 9vh;
+	background-color: $hfBgc;
+}
+
+.brand-sect {
+	@include dpFlex(center, center);
+	min-height: 9vh;
+}
+
+.brand {
+	color: $btnBgc;
+	padding: 0.3rem;
+	transition: color 0.3s;
+}
+
+.brand:hover {
+	color: $linkHoverColor;
+}
+
+main {
+	min-height: 83vh;
+	background-color: $bgc;
+	color: $color;
+}
+
+.title {
+	text-align: center;
+	text-transform: uppercase;
+	padding: 3rem 0.3rem;
+}
+
+.add-item-form {
+	text-align: center;
+}
+
+.item-inp {
+	color: $btnBgc;
+}
+
+.add-item-btn {
+	border: 0.1rem solid $btnBgc;
+	background-color: transparent;
+	color: $btnBgc;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.add-item-btn:hover {
+	background-color: $btnBgc;
+	color: $color;
+}
+
+footer {
+	min-height: 8vh;
+	background-color: $hfBgc;
+	color: $color;
+}
+
+.copyright-sect {
+	@include dpFlex(center, center);
+	min-height: 8vh;
+}
+
+.copyright {
+	padding: 0.3rem;
+}
+
+.author-link {
+	color: $btnBgc;
+	transition: color 0.3s;
+}
+
+.author-link:hover {
+	color: $linkHoverColor;
+}
