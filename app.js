@@ -50,8 +50,7 @@ class Item {
 		shoppingList.appendChild(item);
 	};
 
-	// Check the item
-	static check = (checkItemBtn) => {
+	static checkInList = (checkItemBtn) => {
 		const item = checkItemBtn.parentElement;
 		const checkItemIcon = checkItemBtn.children[0];
 
@@ -64,6 +63,14 @@ class Item {
 		item.classList.add('checked');
 		checkItemIcon.classList.replace('fa-check', 'fa-ban');
 		checkItemBtn.classList.replace('check-item-btn', 'cancel-item-btn');
+	};
+
+	static deleteInList = (delItemBtn) => {
+		const item = delItemBtn.parentElement;
+		item.classList.add('deleted');
+		item.addEventListener('transitionend', () => {
+			item.remove();
+		});
 	};
 }
 
@@ -95,7 +102,10 @@ shoppingList.addEventListener('click', (e) => {
 	const elClicked = e.target;
 	switch (elClicked.id) {
 		case 'check-item-btn':
-			Item.check(elClicked);
+			Item.checkInList(elClicked);
+			break;
+		case 'del-item-btn':
+			Item.deleteInList(elClicked);
 			break;
 	}
 });

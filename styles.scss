@@ -123,6 +123,11 @@ main {
 .item {
 	@include dpFlex(center, center);
 	margin: 0.3rem;
+	transition: opacity 0.3s;
+}
+
+.deleted {
+	opacity: 0;
 }
 
 .item-title {
