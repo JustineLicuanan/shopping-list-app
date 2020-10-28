@@ -129,11 +129,17 @@ main {
 	height: 27.59px;
 	background-color: $linkHoverColor;
 	color: $color;
+	transition: text-decoration 0.3s, opacity 0.3s;
+}
+
+.checked > .item-title {
+	text-decoration: line-through;
+	opacity: 0.5;
 }
 
 .item-title::placeholder {
 	color: $color;
-	opacity: 0.3;
+	opacity: 0.5;
 }
 
 %itemBtn {
@@ -169,6 +175,23 @@ main {
 .del-item-btn:hover {
 	background-color: $hfBgc;
 	color: $danger;
+}
+
+.cancel-item-btn {
+	background-color: $warning;
+	@extend %itemBtn;
+}
+
+.cancel-item-btn:hover {
+	background-color: $hfBgc;
+	color: $warning;
+}
+
+.fa-check,
+.fa-edit,
+.fa-trash,
+.fa-ban {
+	pointer-events: none;
 }
 
 footer {

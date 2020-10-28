@@ -18,7 +18,6 @@ class Item {
 		// Configure check item button
 		const checkItemIcon = document.createElement('span');
 		checkItemIcon.classList.add('fas', 'fa-check');
-		checkItemIcon.id = 'check-item-icon';
 		const checkItemBtn = document.createElement('button');
 		checkItemBtn.appendChild(checkItemIcon);
 		checkItemBtn.classList.add('check-item-btn');
@@ -28,7 +27,6 @@ class Item {
 		// Configure edit item button
 		const editItemIcon = document.createElement('span');
 		editItemIcon.classList.add('fas', 'fa-edit');
-		editItemIcon.id = 'edit-item-icon';
 		const editItemBtn = document.createElement('button');
 		editItemBtn.appendChild(editItemIcon);
 		editItemBtn.classList.add('edit-item-btn');
@@ -50,6 +48,22 @@ class Item {
 
 		// Append item to DOM
 		shoppingList.appendChild(item);
+	};
+
+	// Check the item
+	static check = (checkItemBtn) => {
+		const item = checkItemBtn.parentElement;
+		const checkItemIcon = checkItemBtn.children[0];
+
+		if (item.classList.contains('checked')) {
+			item.classList.remove('checked');
+			checkItemIcon.classList.replace('fa-ban', 'fa-check');
+			checkItemBtn.classList.replace('cancel-item-btn', 'check-item-btn');
+			return;
+		}
+		item.classList.add('checked');
+		checkItemIcon.classList.replace('fa-check', 'fa-ban');
+		checkItemBtn.classList.replace('check-item-btn', 'cancel-item-btn');
 	};
 }
 
@@ -74,4 +88,14 @@ addItemForm.addEventListener('submit', (e) => {
 	// Reset input value
 	addItemForm.itemInp.value = '';
 	addItemForm.itemInp.focus();
+});
+
+// Handle button clicks inside shopping list
+shoppingList.addEventListener('click', (e) => {
+	const elClicked = e.target;
+	switch (elClicked.id) {
+		case 'check-item-btn':
+			Item.check(elClicked);
+			break;
+	}
 });
