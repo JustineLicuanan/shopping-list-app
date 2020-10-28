@@ -2,6 +2,10 @@ $bgc: #242582;
 $color: #fff;
 $btnBgc: #f64c72;
 $linkHoverColor: #99738e;
+$primary: #0392cf;
+$success: #7bc043;
+$warning: #f37736;
+$danger: #ee4035;
 $hfBgc: #2f2fa2;
 
 @mixin dpFlex($jc: false, $ai: false, $fd: false) {
@@ -15,14 +19,6 @@ $hfBgc: #2f2fa2;
 	@if $ai {
 		align-items: $ai;
 	}
-}
-
-%TextInput {
-	font-size: 1rem;
-	padding: 0.3rem;
-	background-color: #fff;
-	border: none;
-	border-radius: 0.3rem;
 }
 
 * {
@@ -40,6 +36,14 @@ a {
 	text-decoration: none;
 	color: #333;
 	outline: none;
+}
+
+%TextInput {
+	font-size: 1rem;
+	padding: 0.3rem;
+	background-color: #fff;
+	border: none;
+	border-radius: 0.3rem;
 }
 
 button {
@@ -110,6 +114,61 @@ main {
 .add-item-btn:hover {
 	background-color: $btnBgc;
 	color: $color;
+}
+
+.shopping-list {
+	padding: 3rem 0.3rem;
+}
+
+.item {
+	@include dpFlex(center, center);
+	margin: 0.3rem;
+}
+
+.item-title {
+	height: 27.59px;
+	background-color: $linkHoverColor;
+	color: $color;
+}
+
+.item-title::placeholder {
+	color: $color;
+	opacity: 0.3;
+}
+
+%itemBtn {
+	color: $color;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.check-item-btn {
+	background-color: $success;
+	@extend %itemBtn;
+}
+
+.check-item-btn:hover {
+	background-color: $hfBgc;
+	color: $success;
+}
+
+.edit-item-btn {
+	background-color: $primary;
+	@extend %itemBtn;
+}
+
+.edit-item-btn:hover {
+	background-color: $hfBgc;
+	color: $primary;
+}
+
+.del-item-btn {
+	background-color: $danger;
+	@extend %itemBtn;
+}
+
+.del-item-btn:hover {
+	background-color: $hfBgc;
+	color: $danger;
 }
 
 footer {
