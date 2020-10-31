@@ -3,7 +3,7 @@ const shoppingList = document.querySelector('.shopping-list');
 
 // Item factory
 class Item {
-	static appendToList = ({ title }) => {
+	static appendToList = ({ id, title, completed }) => {
 		// Create item container
 		const item = document.createElement('li');
 
@@ -17,10 +17,12 @@ class Item {
 
 		// Configure check item button
 		const checkItemIcon = document.createElement('span');
-		checkItemIcon.classList.add('fas', 'fa-check');
+		if (completed) checkItemIcon.classList.add('fas', 'fa-ban');
+		else checkItemIcon.classList.add('fas', 'fa-check');
 		const checkItemBtn = document.createElement('button');
 		checkItemBtn.appendChild(checkItemIcon);
-		checkItemBtn.classList.add('check-item-btn');
+		if (completed) checkItemBtn.classList.add('cancel-item-btn');
+		else checkItemBtn.classList.add('check-item-btn');
 		checkItemBtn.id = 'check-item-btn';
 		item.appendChild(checkItemBtn);
 
@@ -44,16 +46,33 @@ class Item {
 
 		// Configure item container
 		item.classList.add('item');
-		item.id = `d${Date.now()}`;
+		if (completed) item.classList.add('checked');
+		item.id = id;
 
 		// Append item to DOM
 		shoppingList.appendChild(item);
 	};
 
-	static checkInList = (checkItemBtn) => {
+	static checkInList = (state, checkItemBtn) => {
 		const item = checkItemBtn.parentElement;
+		const itemTitle = checkItemBtn.previousElementSibling;
 		const checkItemIcon = checkItemBtn.children[0];
+		const editItemBtn = checkItemBtn.nextElementSibling;
+		const editItemIcon = editItemBtn.children[0];
 
+		if (!itemTitle.value.trim()) {
+			alert('Item field is required');
+			itemTitle.value = '';
+			return;
+		}
+		if (!itemTitle.disabled) {
+			itemTitle.value = itemTitle.value.trim();
+			this.update(state, { id: item.id }, { title: itemTitle.value });
+			itemTitle.disabled = true;
+			editItemIcon.classList.replace('fa-ban', 'fa-edit');
+			editItemBtn.classList.replace('cancel-item-btn', 'edit-item-btn');
+			return;
+		}
 		if (item.classList.contains('checked')) {
 			item.classList.remove('checked');
 			checkItemIcon.classList.replace('fa-ban', 'fa-check');
@@ -65,12 +84,92 @@ class Item {
 		checkItemBtn.classList.replace('check-item-btn', 'cancel-item-btn');
 	};
 
+	static editInList = (state, editItemBtn) => {
+		const item = editItemBtn.parentElement;
+		const itemTitle = editItemBtn.previousElementSibling.previousElementSibling;
+		const checkItemBtn = editItemBtn.previousElementSibling;
+		const checkItemIcon = checkItemBtn.children[0];
+		const editItemIcon = editItemBtn.children[0];
+
+		if (!itemTitle.disabled) {
+			const localItem = this.getOneFromLocalStorage(state, { id: item.id });
+
+			if (localItem.completed) {
+				item.classList.add('checked');
+				checkItemIcon.classList.replace('fa-check', 'fa-ban');
+				checkItemBtn.classList.replace('check-item-btn', 'cancel-item-btn');
+			}
+			itemTitle.value = localItem.title;
+			itemTitle.disabled = true;
+			editItemIcon.classList.replace('fa-ban', 'fa-edit');
+			editItemBtn.classList.replace('cancel-item-btn', 'edit-item-btn');
+			return;
+		}
+		if (item.classList.contains('checked')) {
+			item.classList.remove('checked');
+			checkItemIcon.classList.replace('fa-ban', 'fa-check');
+			checkItemBtn.classList.replace('cancel-item-btn', 'check-item-btn');
+		}
+		itemTitle.disabled = false;
+		itemTitle.focus();
+		editItemIcon.classList.replace('fa-edit', 'fa-ban');
+		editItemBtn.classList.replace('edit-item-btn', 'cancel-item-btn');
+	};
+
 	static deleteInList = (delItemBtn) => {
 		const item = delItemBtn.parentElement;
 		item.classList.add('deleted');
 		item.addEventListener('transitionend', () => {
 			item.remove();
 		});
+	};
+
+	// Save item to local storage
+	static create = (state, { title }) => {
+		const items = this.getFromLocalStorage(state);
+		const item = {
+			id: `d${Date.now()}`,
+			title,
+			completed: false,
+		};
+
+		localStorage.setItem(state, JSON.stringify([...items, item]));
+		return item;
+	};
+
+	static render = (state) => {
+		const items = this.getFromLocalStorage(state);
+		if (!items) return;
+		items.forEach((item) => {
+			this.appendToList(item);
+		});
+	};
+
+	static update = (state, { id }, props) => {
+		const items = this.getFromLocalStorage(state);
+		const keys = Object.keys(props);
+		localStorage.setItem(
+			state,
+			JSON.stringify(
+				items.map((item) => {
+					if (item.id === id)
+						keys.forEach((key) => {
+							item[key] = props[key];
+						});
+					return item;
+				})
+			)
+		);
+	};
+
+	static getFromLocalStorage = (state) => {
+		if (!localStorage.getItem(state)) return [];
+		return JSON.parse(localStorage.getItem(state));
+	};
+
+	static getOneFromLocalStorage = (state, { id }) => {
+		const items = JSON.parse(localStorage.getItem(state));
+		return items.find((item) => item.id === id);
 	};
 }
 
@@ -87,10 +186,11 @@ addItemForm.addEventListener('submit', (e) => {
 		return;
 	}
 
+	// Save item to local storage
+	const item = Item.create('items', { title: itemInp });
+
 	// Append item to list
-	Item.appendToList({
-		title: itemInp,
-	});
+	Item.appendToList(item);
 
 	// Reset input value
 	addItemForm.itemInp.value = '';
@@ -102,10 +202,17 @@ shoppingList.addEventListener('click', (e) => {
 	const elClicked = e.target;
 	switch (elClicked.id) {
 		case 'check-item-btn':
-			Item.checkInList(elClicked);
+			Item.checkInList('items', elClicked);
+			break;
+		case 'edit-item-btn':
+			Item.editInList('items', elClicked);
 			break;
 		case 'del-item-btn':
 			Item.deleteInList(elClicked);
 			break;
 	}
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+	Item.render('items');
 });
