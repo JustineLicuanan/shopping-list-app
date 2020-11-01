@@ -130,8 +130,10 @@ class Item {
 		editItemBtn.classList.replace('edit-item-btn', 'cancel-item-btn');
 	};
 
-	static deleteInList = (delItemBtn) => {
+	static deleteInList = (state, delItemBtn) => {
 		const item = delItemBtn.parentElement;
+
+		this.delete(state, { id: item.id });
 		item.classList.add('deleted');
 		item.addEventListener('transitionend', () => {
 			item.remove();
@@ -172,6 +174,14 @@ class Item {
 					return item;
 				})
 			)
+		);
+	};
+
+	static delete = (state, { id }) => {
+		const items = this.getFromLocalStorage(state);
+		localStorage.setItem(
+			state,
+			JSON.stringify(items.filter((item) => item.id !== id))
 		);
 	};
 
@@ -221,7 +231,7 @@ shoppingList.addEventListener('click', (e) => {
 			Item.editInList('items', elClicked);
 			break;
 		case 'del-item-btn':
-			Item.deleteInList(elClicked);
+			Item.deleteInList('items', elClicked);
 			break;
 	}
 });
