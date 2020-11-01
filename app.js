@@ -55,30 +55,43 @@ class Item {
 
 	static checkInList = (state, checkItemBtn) => {
 		const item = checkItemBtn.parentElement;
+		const localItem = this.getOneFromLocalStorage(state, { id: item.id });
 		const itemTitle = checkItemBtn.previousElementSibling;
 		const checkItemIcon = checkItemBtn.children[0];
 		const editItemBtn = checkItemBtn.nextElementSibling;
 		const editItemIcon = editItemBtn.children[0];
 
+		// Validate edited item
 		if (!itemTitle.value.trim()) {
 			alert('Item field is required');
 			itemTitle.value = '';
 			return;
 		}
+
+		// Update the item title in the local storage
 		if (!itemTitle.disabled) {
 			itemTitle.value = itemTitle.value.trim();
 			this.update(state, { id: item.id }, { title: itemTitle.value });
+
+			if (localItem.completed) {
+				item.classList.add('checked');
+				checkItemIcon.classList.replace('fa-check', 'fa-ban');
+				checkItemBtn.classList.replace('check-item-btn', 'cancel-item-btn');
+			}
 			itemTitle.disabled = true;
 			editItemIcon.classList.replace('fa-ban', 'fa-edit');
 			editItemBtn.classList.replace('cancel-item-btn', 'edit-item-btn');
 			return;
 		}
+
 		if (item.classList.contains('checked')) {
+			this.update(state, { id: item.id }, { completed: false });
 			item.classList.remove('checked');
 			checkItemIcon.classList.replace('fa-ban', 'fa-check');
 			checkItemBtn.classList.replace('cancel-item-btn', 'check-item-btn');
 			return;
 		}
+		this.update(state, { id: item.id }, { completed: true });
 		item.classList.add('checked');
 		checkItemIcon.classList.replace('fa-check', 'fa-ban');
 		checkItemBtn.classList.replace('check-item-btn', 'cancel-item-btn');
@@ -86,14 +99,14 @@ class Item {
 
 	static editInList = (state, editItemBtn) => {
 		const item = editItemBtn.parentElement;
+		const localItem = this.getOneFromLocalStorage(state, { id: item.id });
 		const itemTitle = editItemBtn.previousElementSibling.previousElementSibling;
 		const checkItemBtn = editItemBtn.previousElementSibling;
 		const checkItemIcon = checkItemBtn.children[0];
 		const editItemIcon = editItemBtn.children[0];
 
+		// Cancel item editing
 		if (!itemTitle.disabled) {
-			const localItem = this.getOneFromLocalStorage(state, { id: item.id });
-
 			if (localItem.completed) {
 				item.classList.add('checked');
 				checkItemIcon.classList.replace('fa-check', 'fa-ban');
@@ -105,6 +118,7 @@ class Item {
 			editItemBtn.classList.replace('cancel-item-btn', 'edit-item-btn');
 			return;
 		}
+
 		if (item.classList.contains('checked')) {
 			item.classList.remove('checked');
 			checkItemIcon.classList.replace('fa-ban', 'fa-check');
@@ -140,14 +154,13 @@ class Item {
 	static render = (state) => {
 		const items = this.getFromLocalStorage(state);
 		if (!items) return;
-		items.forEach((item) => {
-			this.appendToList(item);
-		});
+		items.forEach((item) => this.appendToList(item));
 	};
 
 	static update = (state, { id }, props) => {
 		const items = this.getFromLocalStorage(state);
 		const keys = Object.keys(props);
+
 		localStorage.setItem(
 			state,
 			JSON.stringify(
