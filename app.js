@@ -141,13 +141,9 @@ class Item {
 	};
 
 	// Save item to local storage
-	static create = (state, { title }) => {
+	static create = (state, item) => {
 		const items = this.getFromLocalStorage(state);
-		const item = {
-			id: `d${Date.now()}`,
-			title,
-			completed: false,
-		};
+		item.id = `d${Date.now()}`;
 
 		localStorage.setItem(state, JSON.stringify([...items, item]));
 		return item;
@@ -210,7 +206,10 @@ addItemForm.addEventListener('submit', (e) => {
 	}
 
 	// Save item to local storage
-	const item = Item.create('items', { title: itemInp });
+	const item = Item.create('items', {
+		title: itemInp,
+		completed: false,
+	});
 
 	// Append item to list
 	Item.appendToList(item);
